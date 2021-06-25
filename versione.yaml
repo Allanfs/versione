@@ -1,0 +1,11 @@
+versions:
+  major:
+    patterns:
+      - ^(m_|major\/)
+  minor:
+    patterns:
+      - ^(f_|feature\/|feature_)
+  patch:
+    patterns:
+      - ^(b_|bug\/|fix\/)
+      - ^(c_|chore\/)
