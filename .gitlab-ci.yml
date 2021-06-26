@@ -1,10 +1,11 @@
 image: golang:latest
 
 stages:
+  - version
   - build
 
 increment_major_version:
-  stage: build
+  stage: version
   rules:
     # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
     - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^major/ 
@@ -15,7 +16,7 @@ increment_major_version:
       dotenv: version.env
   
 increment_minor_version:
-  stage: build
+  stage: version
   rules:
     # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
     - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/ 
@@ -26,7 +27,7 @@ increment_minor_version:
       dotenv: version.env
 
 increment_patch_version:
-  stage: build
+  stage: version
   rules:
     # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
     - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^fix/ 
@@ -40,6 +41,8 @@ compile:
   stage: build
   script:
     - go build -ldflags="-X 'gitlab.com/allanfs/versione/cmd.Version=$(versao)'" -o versione main.go
+  dependencies:
+    - version
   artifacts:
     paths:
       - versione
