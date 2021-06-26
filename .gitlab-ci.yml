@@ -6,8 +6,8 @@ stages:
 increment_major_version:
   stage: build
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME = dev
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^major/
+    # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^major/ 
   script:
     - ./versione bump major -v $(git describe --tags --abbrev=0) > version.env
   artifacts:
@@ -17,8 +17,8 @@ increment_major_version:
 increment_minor_version:
   stage: build
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME = dev
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/
+    # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/ 
   script:
     - ./versione bump minor -v $(git describe --tags --abbrev=0) > version.env
   artifacts:
@@ -28,8 +28,8 @@ increment_minor_version:
 increment_patch_version:
   stage: build
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME = dev
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^fix/
+    # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^fix/ 
   script:
     - echo versao=${./versione bump patch -v $(git describe --tags --abbrev=0)} > version.env
   artifacts:
