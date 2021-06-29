@@ -4,45 +4,32 @@ stages:
   - version
   - build
 
-increment_major_version:
+increment_version:
   stage: version
-  rules:
-    # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^major/ 
+  before_script:
+    - if [[ $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ major ]]; then
+        BUMP_VERSION=major;
+      elif [[ $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ feature ]]; then
+        BUMP_VERSION=minor;
+      else
+        BUMP_VERSION=patch;
+      fi
   script:
-    - ./versione bump major -v $(git describe --tags --abbrev=0) > version.env
+    - ./versione bump $BUMP_VERSION -v $(git describe --tags --abbrev=0) > new_version
   artifacts:
-    reports:
-      dotenv: version.env
-  
-increment_minor_version:
-  stage: version
-  rules:
-    # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/ 
-  script:
-    - ./versione bump minor -v $(git describe --tags --abbrev=0) > version.env
-  artifacts:
-    reports:
-      dotenv: version.env
-
-increment_patch_version:
-  stage: version
-  rules:
-    # - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^fix/ 
-  script:
-    - echo versao=${./versione bump patch -v $(git describe --tags --abbrev=0)} > version.env
-  artifacts:
-    reports:
-      dotenv: version.env
+    paths:
+      - new_version
+    expire_in: 1 hour
 
 compile:
   stage: build
+  before_script:
+    - versao=`cat ./new_version`
   script:
-    - go build -ldflags="-X 'gitlab.com/allanfs/versione/cmd.Version=$(versao)'" -o versione main.go
+    - go build -ldflags="-X 'gitlab.com/allanfs/versione/cmd.Version=$versao'" -o versione main.go
   dependencies:
-    - version
+    - increment_version
   artifacts:
     paths:
       - versione
+    expire_in: 2 hrs
