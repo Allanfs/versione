@@ -6,6 +6,8 @@ stages:
 
 increment_version:
   stage: version
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev")
   before_script:
     - if [[ $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ major ]]; then
         BUMP_VERSION=major;
@@ -23,6 +25,8 @@ increment_version:
 
 compile:
   stage: build
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev")
   before_script:
     - versao=`cat ./new_version`
   script:
